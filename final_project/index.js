@@ -1,22 +1,20 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const session = require('express-session')
-const customer_routes = require('./router/auth_users.js').authenticated;
-const genl_routes = require('./router/general.js').general;
+const bodyParser = require('body-parser');
+const books = require('./router/booksdb'); // Import the books data
+const regd_users = require('./router/auth_users'); // Import the registered users router
+const generalRouter = require('./router/general'); // Import the general router
 
 const app = express();
+const PORT = 5000;
 
-app.use(express.json());
+app.use(bodyParser.json()); // To parse JSON bodies
 
-app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
+// Books routes
+app.use('/api', generalRouter); // Use generalRouter for API routes
 
-app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+// Auth routes
+app.use('/auth', regd_users); // Mount the auth router for user login and review management
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
- 
-const PORT =5000;
-
-app.use("/customer", customer_routes);
-app.use("/", genl_routes);
-
-app.listen(PORT,()=>console.log("Server is running"));
